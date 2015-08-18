@@ -11,7 +11,7 @@ def diffImg(t0,
     t0 first frame :: ndarray
     t1 second frame :: ndarray
     t2 third frame :: ndarray
-    
+
     This function takes in 3 frames detecting
     the absolute difference in between them
     to then conjunct the differences returning
@@ -38,6 +38,29 @@ def inverte(imagem):
     """
     imagem = (255 - imagem)
     return imagem
+
+
+def blur_thresh(img,
+                sigX=0,
+                sigY=0,
+                size=20,
+                lower_pix=2,
+                upper_pix=255):
+    # Gaussian kernel blur when sigX and sigY set
+    # to 0 variances are computed automatically
+    # based on size
+    initial_blur = cv2.GaussianBlur(img,
+                                    (sigX, sigY),
+                                    size)
+    # binary threshold which takes out very dark pixels
+    # which are deemed as not mooving post to the differential
+    # images procedure
+    ret, thresh = cv2.threshold(initial_blur,
+                                lower_pix,
+                                upper_pix,
+                                cv2.THRESH_BINARY)
+
+    return thresh
 
 
 def void_conts(circs=False, lines=True):
@@ -83,56 +106,34 @@ def void_conts(circs=False, lines=True):
                       r.randint(0, 255),
                       r.randint(0, 255))
 
-        # ABSTRACTION NEEDED STARTING HERE
+        # Blur and threshold differential image to
+        # Extract motion as a binary image
+        thresh = blur_thresh(diffImg(t_minus,
+                                     t,
+                                     t_plus))
 
-        # Final param is the kernel size second are
-        # sigmaX and sigmaY when set to 0 they are computed
-        # automatically from the size of the kernel
-        initial_blur = cv2.GaussianBlur((diffImg(t_minus,
-                                                 t,
-                                                 t_plus)),
-                                        (0, 0),
-                                        20)
-        # binary threshold which takes out very dark pixels
-        # which are deemed as not mooving post to the differential
-        # images procedure
-        ret, thresh = cv2.threshold(initial_blur,
-                                    2,
-                                    255,
-                                    cv2.THRESH_BINARY)
-
-        # Trial, error and inspection led to these numbers..
-        # TODO: look in to some form of histogram optimization
-        # method to find the bluring constants.
-        second_blur = cv2.GaussianBlur(thresh,
-                                       (5, 5),
-                                       15)
-
-
-        # ABSTRACTION NEEDED ENDING HERE
-
-        # Convert from numpy.where()'s two
-        # separate lists to one list of (x, y) tuples:
         # contours of thresholded image
         con, h = cv2.findContours(thresh,
                                   cv2.RETR_TREE,
                                   cv2.CHAIN_APPROX_SIMPLE)
-        cnt = con[:]
+
+        # Actual colored frame
         frame = cam.read()[1]
+        # Used for testing CV methods
         img2 = np.zeros((512, 512, 3),
                         np.uint8) + 255
-        #70 200 290
+        # 70 200 290
 
         # For drawing contours
         if lines:
-          img = cv2.drawContours(frame, cnt, -1, (
-              b1,
-              b2,
-              b3), 3)
+            img = cv2.drawContours(frame, con, -1, (
+                b1,
+                b2,
+                b3), 3)
 
-        # For drawing circles
-        if len(cnt) >= 1 and circs:
-            for index, cn in enumerate(cnt):
+        # For drawing circles, looks pretty why not.
+        if len(con) >= 1 and circs:
+            for index, cn in enumerate(con):
                 center = tuple(cn[0][0])
                 cv2.circle(frame,
                            center,
@@ -155,7 +156,6 @@ def void_conts(circs=False, lines=True):
             break
     cam.release()
     cv2.destroyWindow('frame')
-    
 
 
 def inter_act():
@@ -172,7 +172,7 @@ def inter_act():
                          ))
 
     initial_blur = cv2.GaussianBlur(cam.read()[1],
-                                   (5, 5),
+                                    (5, 5),
                                     0)
     t_minus = cv2.cvtColor(initial_blur,
                            cv2.COLOR_RGB2GRAY)
@@ -180,7 +180,6 @@ def inter_act():
                      cv2.COLOR_RGB2GRAY)
     t_plus = cv2.cvtColor(initial_blur,
                           cv2.COLOR_RGB2GRAY)
-
 
     # Starting position of the ball
     x, y = (320, 240)
@@ -190,36 +189,31 @@ def inter_act():
                       r.randint(0, 255),
                       r.randint(0, 255))
 
-        # Look in to abstractions here since this is 
+        # Look in to abstractions here since this is
         # repeated code.
         initial_blur = cv2.GaussianBlur((diffImg(t_minus,
                                                  t,
                                                  t_plus)),
                                         (0, 0),
-                                        15)
+                                        20)
         ret, thresh = cv2.threshold(initial_blur,
                                     2,
                                     255,
                                     cv2.THRESH_BINARY)
-        second_blur = cv2.GaussianBlur(thresh,
-                                       (5, 5),
-                                       15)
-        ret2, thresh2 = cv2.threshold(second_blur,
-                                      240,
-                                      255,
-                                      cv2.THRESH_BINARY)
+
         # Convert from numpy.where()'s two
-        #separate lists to one list of (x, y) tuples:
-        con, h = cv2.findContours(thresh2,
+        # separate lists to one list of (x, y) tuples:
+        con, h = cv2.findContours(thresh,
                                   cv2.RETR_TREE,
                                   cv2.CHAIN_APPROX_SIMPLE)
-        cnt = con[:]
+
         frame = cam.read()[1]
         img2 = np.zeros((512, 512, 3),
                         np.uint8) + 255
 
         # Blue ball which appears on the screen
         # and is sensitive to motion
+        # Ball should be abstracted as an object
         ball = cv2.circle(frame, (x, y),
                           30,
                           255,
@@ -229,8 +223,8 @@ def inter_act():
         # Need to do some actual physics here...
         # instead of a chain of conditions that make
         # little sense.
-        if len(cnt) >= 1:
-            for index, cn in enumerate(cnt):
+        if len(con) >= 1:
+            for index, cn in enumerate(con):
                 center = tuple(cn[0][0])
                 if center[0] > x - 45 and center[0] < x:
                     x += 20
@@ -260,7 +254,7 @@ def inter_act():
 
         key = cv2.waitKey(10)
 
-        # If key is exit key break 
+        # If key is exit key break
         if key == 27:
             print "\nProgram terminidated with ESC key.\n"
             break
@@ -269,4 +263,5 @@ def inter_act():
 
 
 if __name__ == "__main__":
-  void_conts()
+    # void_conts()
+    inter_act()
