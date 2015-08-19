@@ -1,7 +1,6 @@
-import cv2
 import random as r
 import numpy as np
-
+import cv2
 
 def diffImg(t0,
             t1,
@@ -74,13 +73,16 @@ def void_conts(circs=False, lines=True):
     loop bluring process.
     """
     # Initialize camera
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture(-1)
 
     # Obtain dimensions of window
     width = int(cam.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH
                         ))
     height = int(cam.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT
                          ))
+    print cam
+    print cam.read()
+    # bbb
 
     #  Read in first image and greyscale.
     initial_img = cam.read()[1]
@@ -90,6 +92,7 @@ def void_conts(circs=False, lines=True):
     # t_minus = image in the past
     # t = image in the present
     # t_plus = image in the future (this needs rewording)
+    print initial_img.shape
     t_minus = cv2.cvtColor(initial_img,
                            cv2.COLOR_RGB2GRAY)
     t = cv2.cvtColor(initial_img,
@@ -164,7 +167,9 @@ def inter_act():
     screan. Sadly it is quite suceptible to noise and no proper physics
     governs the motion of the ball at the moment.
     """
-    cam = cv2.VideoCapture(0)
+    cam = cv2.VideoCapture()
+    print cam
+    bbb
 
     width = int(cam.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH
                         ))
@@ -263,5 +268,5 @@ def inter_act():
 
 
 if __name__ == "__main__":
-    # void_conts()
-    inter_act()
+    void_conts()
+    # inter_act()
