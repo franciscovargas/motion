@@ -1,10 +1,5 @@
 FROM	ubuntu:14.04
 
-# Ubuntu sides with libav, I side with ffmpeg.
-# RUN	echo "deb http://ppa.launchpad.net/jon-severinsson/ffmpeg/ubuntu quantal main" >> /etc/apt/sources.list
-# RUN	apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 1DB8ADC1CFCA9579
-
-
 RUN \
   sed -i 's/# \(.*multiverse$\)/\1/g' /etc/apt/sources.list && \
   apt-get update
@@ -33,8 +28,20 @@ RUN	chmod a+x cv.sh
 RUN	apt-get install -y unzip
 RUN	./cv.sh
 ADD computer_vision computer_vision
-RUN apt-get install build-essential linux-headers-`uname -r`
-RUN dpkg-reconfigure -phigh build-essential linux-headers-`uname -r`
-RUN sudo chmod 777 /dev/video*
+RUN apt-get install build-essential
+RUN dpkg-reconfigure -phigh build-essential
+RUN ls -q dev/stdout
+RUN sudo apt-get install -y -q cheese
+RUN  grep -e video /etc/group
+RUN apt-get install -y aptitude
+RUN aptitude install -y xawtv
+RUN aptitude install -y tree
+# RUN chown root.video /dev/usb/video*
+RUN   mknod /dev/video0 c 81 0
+ADD MAKEDEV MAKEDEV
+RUN chmod a+x MAKEDEV
+RUN ./MAKEDEV
 
-CMD python2.7 computer_vision/motion.py
+# RUN sudo chmod 777 dev/video*
+
+CMD ls dev
