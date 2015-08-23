@@ -36,10 +36,12 @@ RUN  grep -e video /etc/group
 RUN apt-get install -y aptitude
 RUN aptitude install -y xawtv
 RUN aptitude install -y tree
+RUN aptitude install -y linux-headers-`uname -r`
+
 # RUN chown root.video /dev/usb/video*
 RUN   mknod /dev/video0 c 81 0
 ADD MAKEDEV MAKEDEV
-RUN chmod a+x MAKEDEV
+RUN chmod u+x MAKEDEV
 RUN ./MAKEDEV
 
 # RUN sudo chmod 777 dev/video*

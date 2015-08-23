@@ -80,8 +80,7 @@ def void_conts(circs=False, lines=True):
                         ))
     height = int(cam.get(cv2.cv.CV_CAP_PROP_FRAME_HEIGHT
                          ))
-    print cam
-    print cam.read()
+
     # bbb
 
     #  Read in first image and greyscale.
@@ -91,8 +90,7 @@ def void_conts(circs=False, lines=True):
     # tracking technique
     # t_minus = image in the past
     # t = image in the present
-    # t_plus = image in the future (this needs rewording)
-    print initial_img.shape
+
     t_minus = cv2.cvtColor(initial_img,
                            cv2.COLOR_RGB2GRAY)
     t = cv2.cvtColor(initial_img,
@@ -155,7 +153,7 @@ def void_conts(circs=False, lines=True):
         key = cv2.waitKey(10)
 
         if key == 27:
-            print "\nProgram terminidated with ESC key.\n"
+            # print "\nProgram terminidated with ESC key.\n"
             break
     cam.release()
     cv2.destroyWindow('frame')
@@ -167,9 +165,7 @@ def inter_act():
     screan. Sadly it is quite suceptible to noise and no proper physics
     governs the motion of the ball at the moment.
     """
-    cam = cv2.VideoCapture()
-    print cam
-    bbb
+    cam = cv2.VideoCapture(0)
 
     width = int(cam.get(cv2.cv.CV_CAP_PROP_FRAME_WIDTH
                         ))
@@ -261,12 +257,12 @@ def inter_act():
 
         # If key is exit key break
         if key == 27:
-            print "\nProgram terminidated with ESC key.\n"
+            # print "\nProgram terminidated with ESC key.\n"
             break
     cam.release()
     cv2.destroyWindow('frame')
 
 
 if __name__ == "__main__":
-    void_conts()
-    # inter_act()
+    # void_?conts()
+    inter_act()
