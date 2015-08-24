@@ -6,4 +6,9 @@ Make sure requirements are satisfied.
     $ python motion.py
 
 Will run the main motion detection algorithm. A command line tool facility will be in development soon.
-Docker file currently running a opencv container in ubuntu14.04 nonetheless it has no access to the webcam facillities.
+
+To run using docker container with the motion app:
+
+    $ docker build -t img .
+    $ docker run -it --privileged -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY  -v $HOME/.Xauthority:/root/.Xauthority img
+

@@ -264,5 +264,5 @@ def inter_act():
 
 
 if __name__ == "__main__":
-    # void_?conts()
-    inter_act()
+    void_conts()
+    # inter_act()
