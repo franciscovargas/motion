@@ -10,5 +10,6 @@ Will run the main motion detection algorithm. A command line tool facility will 
 To run using docker container with the motion app:
 
     $ docker build -t img .
+    $ xhost +
     $ docker run -it --privileged -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY  -v $HOME/.Xauthority:/root/.Xauthority img
 

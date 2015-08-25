@@ -16,7 +16,6 @@ RUN	\
 RUN	 curl 'https://bootstrap.pypa.io/get-pip.py' -o 'get-pip.py'
 RUN  python2.7 get-pip.py
 # RUN  apt-get install -y python-pip python-dev build-essential
-RUN  pip install -U setuptools
 RUN  pip install  -U pip 
 RUN  pip install  -U virtualenv
 RUN	 pip install -U numpy
@@ -34,16 +33,6 @@ RUN ls -q dev/stdout
 RUN  apt-get install -y -q cheese
 RUN  grep -e video /etc/group
 RUN apt-get install -y aptitude
-RUN aptitude install -y tree
 
-# RUN chown root.video /dev/usb/video*
-RUN   mknod /dev/video0 c 81 0
-ADD MAKEDEV MAKEDEV
-RUN chmod u+x MAKEDEV
-RUN ./MAKEDEV
-RUN aptitude install -y xawtv
-# RUN chmod g+rw dev/video0
-
-# RUN  chmod 777 dev/video*
 
 CMD python computer_vision/motion.py
